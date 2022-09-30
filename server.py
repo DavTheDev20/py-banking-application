@@ -16,6 +16,11 @@ def home():
 def register():
     return render_template('register.html', curr_date=current_date, title="Register")
 
+@app.route('/user/<user_id>')
+def user_page(user_id):
+    # Route used to show user their banking information.
+    pass
+
 
 if __name__ == '__main__':
     app.run(debug=True)
