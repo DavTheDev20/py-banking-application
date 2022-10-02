@@ -1,4 +1,6 @@
+from http import server
 from pprint import pprint
+import smtpd
 from flask import Flask, render_template, jsonify, request, g
 import sqlite3
 from datetime import datetime
@@ -8,6 +10,7 @@ import bcrypt
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
+from smtplib import SMTP, SMTP_SSL
 
 load_dotenv()
 
@@ -16,6 +19,8 @@ CORS(app)
 
 SQL_DATABASE = "./db/main.db"
 JWT_SECRET = os.environ["JWT_SECRET"]
+GMAIL_USER = os.environ["GMAIL_USER"]
+GMAIL_PASSWORD = os.environ["GMAIL_PASSWORD"]
 
 current_date = datetime.now().strftime("%Y")
 
@@ -53,6 +58,15 @@ def register_user():
             try:
                 cur.execute(sql)
                 con.commit()
+                try:
+                    server = SMTP_SSL('smtp.gmail.com', 465)
+                    server.ehlo()
+                    server.login(GMAIL_USER, GMAIL_PASSWORD)
+                    server.sendmail(
+                        GMAIL_USER, data["email"], "Subject: Welcome to the Bank!\nThis is a test.")
+                except:
+                    traceback.print_exc()
+                    print("Error sending email")
                 token = jwt.encode(
                     {"username": data["username"], "email": data["email"]}, JWT_SECRET, "HS256")
                 return {"success": True, "token": token}, 200
