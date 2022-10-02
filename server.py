@@ -63,7 +63,7 @@ def register_user():
                     server.ehlo()
                     server.login(GMAIL_USER, GMAIL_PASSWORD)
                     server.sendmail(
-                        GMAIL_USER, data["email"], "Subject: Welcome to the Bank!\nThis is a test.")
+                        GMAIL_USER, data["email"], f"Subject: Welcome to the Bank {data['username']}!\nThis is a test.")
                 except:
                     traceback.print_exc()
                     print("Error sending email")
@@ -84,4 +84,4 @@ def user_page(user_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000)

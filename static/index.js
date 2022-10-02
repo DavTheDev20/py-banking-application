@@ -8,7 +8,7 @@ function handleRegisterSubmission() {
     return;
   }
 
-  fetch('http://localhost:5000/api/register', {
+  fetch('http://localhost:3000/api/register', {
     method: 'POST',
     mode: 'cors',
     headers: {
