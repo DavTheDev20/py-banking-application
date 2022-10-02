@@ -8,5 +8,24 @@ function handleRegisterSubmission() {
     return;
   }
 
-  window.location.href = '/'; //Change this to navigate to valid location
+  fetch('http://localhost:5000/api/register', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    }),
+  })
+    .then((res) => {
+      console.log(res);
+      return (window.location.href = '/');
+    })
+    .catch((err) => {
+      console.log(err);
+      return alert(err.message);
+    });
 }

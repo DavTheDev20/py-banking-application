@@ -7,10 +7,12 @@ import jwt
 import bcrypt
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 SQL_DATABASE = "./db/main.db"
 JWT_SECRET = os.environ["JWT_SECRET"]
