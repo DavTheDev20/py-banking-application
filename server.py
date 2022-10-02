@@ -5,10 +5,15 @@ from datetime import datetime
 import traceback
 import jwt
 import bcrypt
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
 SQL_DATABASE = "./db/main.db"
+JWT_SECRET = os.environ["JWT_SECRET"]
 
 current_date = datetime.now().strftime("%Y")
 
@@ -18,7 +23,7 @@ cur = con.cursor()
 
 def create_users_table():
     """Creates SQL database table to store users"""
-    sql = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, email TEXT, password TEXT)"
+    sql = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT UNIQUE, password TEXT)"
     cur.execute(sql)
 
 
@@ -42,16 +47,16 @@ def register_user():
         if data["username"] and data["email"] and data["password"]:
             hashed_password = str(bcrypt.hashpw(
                 data["password"].encode("utf-8"), bcrypt.gensalt()), "utf-8")
-
-            print(hashed_password)
             sql = f"INSERT INTO users (username, email, password) VALUES ('{data['username']}', '{data['email']}', '{hashed_password}')"
             try:
                 cur.execute(sql)
                 con.commit()
-                return {"success": True}
+                token = jwt.encode(
+                    {"username": data["username"], "email": data["email"]}, JWT_SECRET, "HS256")
+                return {"success": True, "token": token}, 200
             except:
                 pprint(traceback.format_exc())
-                return {"success": False, "error": traceback.format_exc()}
+                return {"success": False, "error": traceback.format_exc()}, 500
     except KeyError:
         return {"success": False, "error": "Please include username, email, and password in request json body."}, 400
 
