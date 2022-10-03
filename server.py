@@ -77,15 +77,32 @@ def register_user():
         return {"success": False, "error": "Please include username, email, and password in request json body."}, 400
 
 
-@app.route('/api/login')
+@app.route('/api/login', methods=["POST"])
 def login_user():
     # Implement logic for login route
     # Steps:
-    # 1. Obtain JSON request data from client
-    # 2. Search for user in SQL database by username or email and check password hash against submitted password > (bcrypt.checkpw(password, hashed))
-    # 3. Implement logic based on if the user validation passed or failed
+    # 1. Obtain JSON request data from client'
+    data = request.json
+    try:
+        if data["username"] and data["password"]:
+            sql = f"SELECT * FROM users WHERE username = '{data['username']}'"
+            res = cur.execute(sql)
+            user = {}
+            for row in res:
+                user["id"] = row[0]
+                user["username"] = row[1]
+                user["email"] = row[2]
+                user["password"] = row[3]
+            # Fix error indicated when there is no user in database that matches the username provided ***
+            if bcrypt.checkpw(data["password"].encode("utf-8"), user["password"].encode("utf-8")):
+                token = jwt.encode(
+                    {"username": user["email"], "email": user["email"]}, JWT_SECRET, "HS256")
+                return {"success": True, "token": token}
+            else:
+                return {"success": False, "error": "Invalid password"}
+    except KeyError:
+        return {"success": False, "error": "Please include username and password in request json body."}, 400
     # 4. If passed return jsonwebtoken back to client for storage within a cookie and redirect to diffrent page
-    pass
 
 
 @app.route('/user/<user_id>')
