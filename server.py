@@ -77,6 +77,17 @@ def register_user():
         return {"success": False, "error": "Please include username, email, and password in request json body."}, 400
 
 
+@app.route('/api/login')
+def login_user():
+    # Implement logic for login route
+    # Steps:
+    # 1. Obtain JSON request data from client
+    # 2. Search for user in SQL database by username or email and check password hash against submitted password > (bcrypt.checkpw(password, hashed))
+    # 3. Implement logic based on if the user validation passed or failed
+    # 4. If passed return jsonwebtoken back to client for storage within a cookie and redirect to diffrent page
+    pass
+
+
 @app.route('/user/<user_id>')
 def user_page(user_id):
     # Route used to show user their banking information.
