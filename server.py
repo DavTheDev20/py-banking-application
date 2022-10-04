@@ -1,7 +1,5 @@
-from http import server
 from pprint import pprint
-import smtpd
-from flask import Flask, render_template, jsonify, request, g
+from flask import Flask, render_template, request
 import sqlite3
 from datetime import datetime
 import traceback
@@ -10,7 +8,7 @@ import bcrypt
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
-from smtplib import SMTP, SMTP_SSL
+from smtplib import SMTP_SSL
 
 load_dotenv()
 
@@ -87,13 +85,15 @@ def login_user():
         if data["username"] and data["password"]:
             sql = f"SELECT * FROM users WHERE username = '{data['username']}'"
             res = cur.execute(sql)
+            if res.fetchone() == None:
+                return {"success": False, "error": "No user found."}, 400
             user = {}
             for row in res:
                 user["id"] = row[0]
                 user["username"] = row[1]
                 user["email"] = row[2]
                 user["password"] = row[3]
-            # Fix error indicated when there is no user in database that matches the username provided ***
+            # Fix logic hole indicated when there is no user in database that matches the username provided ***
             if bcrypt.checkpw(data["password"].encode("utf-8"), user["password"].encode("utf-8")):
                 token = jwt.encode(
                     {"username": user["email"], "email": user["email"]}, JWT_SECRET, "HS256")
@@ -101,6 +101,7 @@ def login_user():
             else:
                 return {"success": False, "error": "Invalid password"}
     except KeyError:
+        traceback.print_exc()
         return {"success": False, "error": "Please include username and password in request json body."}, 400
     # 4. If passed return jsonwebtoken back to client for storage within a cookie and redirect to diffrent page
 

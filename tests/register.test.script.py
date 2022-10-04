@@ -18,7 +18,7 @@ login = {
 }
 
 # Access localhost development site
-driver.get("http://127.0.0.1:5000")
+driver.get("http://127.0.0.1:3000")
 
 register_button = driver.find_element(
     by=By.XPATH, value="/html/body/div[1]/div/a[2]")
