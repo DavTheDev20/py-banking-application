@@ -45,6 +45,11 @@ def register():
     return render_template('register.html', curr_date=current_date, title="Register")
 
 
+@app.route('/login')
+def login():
+    return render_template('login.html', curr_date=current_date, title="Login")
+
+
 @app.route('/api/register', methods=["POST"])
 def register_user():
     data = request.json
@@ -77,33 +82,20 @@ def register_user():
 
 @app.route('/api/login', methods=["POST"])
 def login_user():
-    # Implement logic for login route
-    # Steps:
-    # 1. Obtain JSON request data from client'
     data = request.json
-    try:
-        if data["username"] and data["password"]:
-            sql = f"SELECT * FROM users WHERE username = '{data['username']}'"
-            res = cur.execute(sql)
-            if res.fetchone() == None:
-                return {"success": False, "error": "No user found."}, 400
-            user = {}
-            for row in res:
-                user["id"] = row[0]
-                user["username"] = row[1]
-                user["email"] = row[2]
-                user["password"] = row[3]
-            # Fix logic hole indicated when there is no user in database that matches the username provided ***
-            if bcrypt.checkpw(data["password"].encode("utf-8"), user["password"].encode("utf-8")):
-                token = jwt.encode(
-                    {"username": user["email"], "email": user["email"]}, JWT_SECRET, "HS256")
-                return {"success": True, "token": token}
-            else:
-                return {"success": False, "error": "Invalid password"}
-    except KeyError:
-        traceback.print_exc()
-        return {"success": False, "error": "Please include username and password in request json body."}, 400
-    # 4. If passed return jsonwebtoken back to client for storage within a cookie and redirect to diffrent page
+    sql = f"SELECT * from users WHERE username = '{data['username']}'"
+    res = cur.execute(sql)
+    user_data = res.fetchall()
+    if user_data == []:
+        return {"success": False, "error": "No user found with that username"}, 400
+    user = {"username": user_data[0][1],
+            "email": user_data[0][2], "password": user_data[0][3]}
+    if bcrypt.checkpw(data['password'].encode('utf-8'), user["password"].encode('utf-8')):
+        token = jwt.encode(
+            {"username": user["username"], "email": user["email"]}, JWT_SECRET, "HS256")
+        return {"success": True, "token": token}
+    else:
+        return {"success": False, "error": "Incorrect password, please try again"}, 400
 
 
 @app.route('/user/<user_id>')

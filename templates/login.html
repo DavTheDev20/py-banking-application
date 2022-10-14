@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+<div class="text-center mt-4">
+  <h1>Login</h1>
+  <form class="mt-4 w-25 m-auto" onsubmit="handleLogin()">
+    <label class="form-label" for="username">Username:</label>
+    <input
+      id="username"
+      name="username"
+      type="text"
+      class="form-control"
+      placeholder="Enter username"
+    />
+    <label class="form-label">Password: </label>
+    <input
+      name="password"
+      type="password"
+      class="form-control"
+      placeholder="Enter password"
+    />
+    <small class="mt-2 fs-6" style="color: red; display: none" id="errorText"
+      >Please enter all values to continue</small
+    >
+    <br />
+    <input type="submit" value="Submit" class="btn btn-danger mt-2" />
+  </form>
+</div>
+{%endblock%}
