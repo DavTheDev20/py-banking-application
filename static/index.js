@@ -64,7 +64,8 @@ function handleLogin() {
           // Hide error text if successful login after failed attempt
           errorText.style.display = 'none';
         }
-        return console.log(data);
+        Cookies.set('token', data.token);
+        window.location.replace('/');
       });
     })
     .catch((err) => {

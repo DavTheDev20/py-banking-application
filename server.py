@@ -34,6 +34,9 @@ def create_users_table():
 
 create_users_table()
 
+# TODO: CREATE DECORATOR FUNCTION THAT HANDLES SECURING ROUTES THAT
+# REQUIRE USERNAME AND PASSWORD TO ACCESS
+
 
 @app.route('/')
 def home():
@@ -62,6 +65,7 @@ def register_user():
                 cur.execute(sql)
                 con.commit()
                 try:
+                    # This code sends an email to user upon registration using email provided
                     server = SMTP_SSL('smtp.gmail.com', 465)
                     server.ehlo()
                     server.login(GMAIL_USER, GMAIL_PASSWORD)
@@ -70,6 +74,7 @@ def register_user():
                 except:
                     traceback.print_exc()
                     print("Error sending email")
+                # Creates JSON web token to be used to identify user on client side
                 token = jwt.encode(
                     {"username": data["username"], "email": data["email"]}, JWT_SECRET, "HS256")
                 return {"success": True, "token": token}, 200
@@ -96,12 +101,6 @@ def login_user():
         return {"success": True, "token": token}
     else:
         return {"success": False, "error": "Incorrect password, please try again"}, 400
-
-
-@app.route('/user/<user_id>')
-def user_page(user_id):
-    # Route used to show user their banking information.
-    pass
 
 
 if __name__ == '__main__':
