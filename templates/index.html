@@ -1,9 +1,15 @@
 {% extends "base.html" %} {% block content %}
-<div class="text-center mt-4">
+<div class="text-center mt-4" onload="checkIfLoggedIn()">
   <h1>Welcome to the Test Banking Application</h1>
   <div class="buttons mt-5">
-    <a class="btn btn-primary btn-lg me-3" href="/login">Login</a>
-    <a class="btn btn-secondary btn-lg ms-3" href="/register">Register</a>
+    <!-- TODO: Disable buttons if the user is already logged in.-->
+    <div id="homeButtons">
+      <a class="btn btn-primary btn-lg me-3" href="/login">Login</a>
+      <a class="btn btn-secondary btn-lg ms-3" href="/register">Register</a>
+    </div>
+    <div id="logoutButton" style="display: none" onclick="logoutUser()">
+      <a class="btn btn-danger btn-lg ms-3">Logout</a>
+    </div>
   </div>
 </div>
 {% endblock %}

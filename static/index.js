@@ -65,10 +65,28 @@ function handleLogin() {
           errorText.style.display = 'none';
         }
         Cookies.set('token', data.token);
-        window.location.replace('/');
+        window.location.replace('/main');
       });
     })
     .catch((err) => {
       console.log(err);
     });
+}
+
+function checkIfLoggedIn() {
+  const homeButtons = document.getElementById('homeButtons');
+  const logoutButton = document.getElementById('logoutButton');
+  if (Cookies.get('token')) {
+    homeButtons.style.display = 'none';
+    logoutButton.style.display = 'block';
+  }
+}
+
+window.onload = () => {
+  checkIfLoggedIn();
+};
+
+function logoutUser() {
+  Cookies.remove('token');
+  window.location.reload();
 }

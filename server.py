@@ -1,5 +1,5 @@
 from pprint import pprint
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 from datetime import datetime
 import traceback
@@ -34,8 +34,14 @@ def create_users_table():
 
 create_users_table()
 
-# TODO: CREATE DECORATOR FUNCTION THAT HANDLES SECURING ROUTES THAT
-# REQUIRE USERNAME AND PASSWORD TO ACCESS
+
+def secured_route(route_func):
+    def check_token():
+        token = request.cookies.get('token')
+        if token == None:
+            return redirect(url_for('login'), code=401)
+        return route_func(token)
+    return check_token
 
 
 @app.route('/')
@@ -51,6 +57,15 @@ def register():
 @app.route('/login')
 def login():
     return render_template('login.html', curr_date=current_date, title="Login")
+
+
+@app.route('/main')
+@secured_route
+def main(token):
+    token_data = jwt.decode(token, JWT_SECRET, "HS256")
+    user_data = {
+        "username": token_data["username"], "email": token_data["email"]}
+    return render_template('main.html', curr_date=current_date, title=f"Welcome {user_data['email'].upper()}", user_data=user_data)
 
 
 @app.route('/api/register', methods=["POST"])
