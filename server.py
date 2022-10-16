@@ -65,7 +65,7 @@ def main(token):
     token_data = jwt.decode(token, JWT_SECRET, "HS256")
     user_data = {
         "username": token_data["username"], "email": token_data["email"]}
-    return render_template('main.html', curr_date=current_date, title=f"Welcome {user_data['email'].upper()}", user_data=user_data)
+    return render_template('main.html', curr_date=current_date, title=f"Welcome {user_data['username'].upper()}", user_data=user_data)
 
 
 @app.route('/api/register', methods=["POST"])

@@ -76,9 +76,17 @@ function handleLogin() {
 function checkIfLoggedIn() {
   const homeButtons = document.getElementById('homeButtons');
   const logoutButton = document.getElementById('logoutButton');
+  const loggedInButtons = document.querySelector('.loggedInButtons');
+  const notLoggedInButtons = document.getElementById('notLoggedInButtons');
   if (Cookies.get('token')) {
-    homeButtons.style.display = 'none';
-    logoutButton.style.display = 'block';
+    notLoggedInButtons.style.display = 'none';
+    loggedInButtons.style.display = 'flex';
+    if (homeButtons) {
+      homeButtons.style.display = 'none';
+    }
+    if (logoutButton) {
+      logoutButton.style.display = 'block';
+    }
   }
 }
 
@@ -88,5 +96,5 @@ window.onload = () => {
 
 function logoutUser() {
   Cookies.remove('token');
-  window.location.reload();
+  window.location.replace('/');
 }
